@@ -26,7 +26,12 @@ ALTER TABLE IF EXISTS ONLY public.subregions DROP CONSTRAINT subregions_pkey;
 DROP TABLE IF EXISTS public.subregions;
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+-- Conditionally run SET
+DO $$BEGIN
+    IF (SELECT current_setting('server_version'))::float >= 12 THEN
+        SET default_table_access_method = heap;
+    END IF;
+END$$;
 
 --
 -- Name: subregions; Type: TABLE; Schema: public; Owner: postgres

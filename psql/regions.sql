@@ -24,7 +24,12 @@ ALTER TABLE IF EXISTS ONLY public.regions DROP CONSTRAINT regions_pkey;
 DROP TABLE IF EXISTS public.regions;
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+-- Conditionally run SET
+DO $$BEGIN
+    IF (SELECT current_setting('server_version'))::float >= 12 THEN
+        SET default_table_access_method = heap;
+    END IF;
+END$$;
 
 --
 -- Name: regions; Type: TABLE; Schema: public; Owner: postgres
