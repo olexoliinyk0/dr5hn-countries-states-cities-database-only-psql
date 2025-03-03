@@ -17,6 +17,21 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Create temp functions
+--
+
+CREATE FUNCTION pg_temp.alter_table_owner(table_name TEXT) RETURNS VOID
+    LANGUAGE plpgsql
+    VOLATILE
+    AS $$
+        DECLARE new_owner TEXT;
+        BEGIN
+            SELECT CASE WHEN schemaname = 'public' THEN tableowner ELSE 'postgres' END FROM pg_catalog.pg_tables INTO new_owner LIMIT 1;
+            EXECUTE format('ALTER TABLE public.%I OWNER TO %I', table_name, new_owner);
+        END
+    $$;
+
+--
 -- Drop constraints, indexes, tables if exists
 --
 
@@ -70,7 +85,7 @@ CREATE TABLE public.countries (
 );
 
 
-ALTER TABLE public.countries OWNER TO postgres;
+SELECT pg_temp.alter_table_owner('countries');
 
 --
 -- Name: COLUMN countries."wikiDataId"; Type: COMMENT; Schema: public; Owner: postgres
