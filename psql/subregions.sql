@@ -43,7 +43,7 @@ SET default_tablespace = '';
 
 -- Conditionally run SET
 DO $$BEGIN
-    IF (SELECT current_setting('server_version'))::float >= 12 THEN
+    IF (SELECT SPLIT_PART(current_setting('server_version'), ' ', 1))::float >= 12 THEN
         SET default_table_access_method = heap;
     END IF;
 END$$;
